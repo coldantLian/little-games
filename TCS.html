@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>贪吃蛇</title>
+		<style type="text/css">
+			.frame {
+				width: 1310px;
+				height: 590px;
+				border: 4px solid #EC504E;
+				background-color: #004040;
+				position: relative;
+			}
+			
+			.frame .snake .snakeBody {
+				width: 30px;
+				height: 30px;
+				background-color: #00FA00;
+				border-radius: 2px;
+				position: absolute;
+			}
+			
+			.frame .food {
+				width: 30px;
+				height: 30px;
+				background-color: yellow;
+				border-radius: 2px;
+				position: absolute;
+			}
+			table{
+				height: 100%;
+				width: 100%;
+				background-color: rgba(205,205,205,0.7);
+				position: absolute;
+				left: 0;
+				top: 0;
+				align-content: center;
+				
+			}
+			table td{
+				text-align: center;
+				vertical-align: middle;			}
+			table td div{
+				text-align: center;
+				vertical-align: middle;
+				height: 70px;
+				width: 400px;
+				background-color: #f07777;
+				font-size: 50px;
+				color: #000000;
+				display: inline-block;	
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="frame">
+			<div class="snake">
+
+			</div>
+
+		</div>
+		<table>
+			<tr>
+				<td>
+					<div class="easy">EASY</div>
+					<div class="normal">NORMAL</div>
+					<div class="hard">HARD</div>
+
+				</td>
+			</tr>
+		</table>
+
+		<script src="css/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var bao = {
+				bTop: 240,
+				bLeft: 640,
+				fTop: null,
+				fLeft: null,
+				bodylong: 14,
+				speed: null,
+				t: null,
+				r: null,
+				b: null,
+				l: null,
+				vertical: 0,
+				horizontal: 0,
+				createsnake: function() {
+					var snake = $(".snake");
+					snake.html = "";
+					snake.append(this.createbody());
+				},
+				createbody: function() {
+					me = this;
+					body = [
+						'<div class="snakeBody" style="left: {@bodyleft}px; top: {@bodytop}px;">',
+						'</div>'
+					];
+					return body.join("").replace("{@bodyleft}", me.bLeft).replace("{@bodytop}", me.bTop);
+				},
+
+				judgenewfood: function() {
+					me = this;
+					$(".snakeBody").each(
+						function() {
+							if($(this).css("left") == me.fLeft + "px" && $(this).css("top") == me.fTop + "px") {
+								me.fLeft = 0;
+							}
+
+						}
+
+					)
+					return this.fLeft;
+				},
+				creatfood: function() {
+					me = this;
+					do {
+						ft = Math.round(Math.random() * 14) * 40;
+						fl = Math.round(Math.random() * 32) * 40;
+						me.fLeft = fl;
+						me.fTop = ft;
+					} while (!me.judgenewfood());
+
+					body = [
+						'<div class="food" style="left: {@bodyleft}px; top: {@bodytop}px;">',
+						'</div>'
+					];
+					return body.join("").replace("{@bodyleft}", me.fLeft).replace("{@bodytop}", me.fTop);
+				},
+				judgewall: function() {
+					if(bao.bTop < 0 || bao.bTop > 589 || bao.bLeft < 0 || bao.bLeft > 1309) {
+						alert("GAME OVER!");
+						window.location.reload();
+					}
+				},
+				judgefood: function() {
+					if(!$(".food").length) {
+						$(".frame").append(this.creatfood());
+					}
+				},
+				judgeeat: function() {
+					if(bao.fLeft == bao.bLeft && bao.fTop == bao.bTop) {
+						bao.bodylong++;
+						var snake = $(".snake");
+						snake.html = "";
+						snake.prepend(this.createbody());
+						$(".food").remove();
+					}
+				},
+				judgeself: function() {
+					$(".snakeBody").each(function() {
+						if($(this).css("left") == bao.bLeft + "px" && $(this).css("top") == bao.bTop + "px") {
+							alert("自刀而亡ヽ(￣▽￣)ﾉ");
+							window.location.reload();
+						}
+					})
+				},
+				top: function() {
+					me = this;
+					me.bTop -= 40;
+					var snakebody = $(".snakeBody");
+					if(snakebody.length >= this.bodylong) {
+						$(".snake .snakeBody:lt(1)").remove();
+					};
+
+					me.judgewall();
+					me.judgeself();
+					me.judgeeat();
+					me.createsnake();
+				},
+				right: function() {
+					me = this;
+					me.bLeft += 40;
+					var snakebody = $(".snakeBody");
+					if(snakebody.length >= this.bodylong) {
+						$(".snake .snakeBody:lt(1)").remove();
+					};
+					me.judgewall();
+					me.judgeself();
+					me.judgeeat();
+					me.createsnake();
+				},
+				bottom: function() {
+					me = this;
+					me.bTop += 40;
+					var snakebody = $(".snakeBody");
+					if(snakebody.length >= this.bodylong) {
+						$(".snake .snakeBody:lt(1)").remove();
+					};
+					me.judgewall();
+					me.judgeself();
+					me.judgeeat();
+					me.createsnake();
+
+				},
+				left: function() {
+					me = this;
+					me.bLeft -= 40;
+					var snakebody = $(".snakeBody");
+					if(snakebody.length >= this.bodylong) {
+						$(".snake .snakeBody:lt(1)").remove();
+					};
+					me.judgewall();
+					me.judgeself();
+					me.judgeeat();
+					me.createsnake();
+				}
+
+			}
+			var aao = {
+				direction: function(key) {
+					switch(key) {
+						case 38:
+							if(bao.horizontal == 0) {
+								clearInterval(t);
+								clearInterval(b);
+								clearInterval(l);
+								clearInterval(r);
+								t = setInterval(function() {
+									bao.judgefood();
+									bao.top();
+									bao.vertical = 0;
+									bao.horizontal = 1;
+								}, bao.speed);
+							}
+							break;
+						case 39:
+							if(bao.vertical == 0) {
+								clearInterval(t);
+								clearInterval(b);
+								clearInterval(l);
+								clearInterval(r);
+								r = setInterval(function() {
+									bao.judgefood();
+									bao.right();
+									bao.vertical = 1;
+									bao.horizontal = 0;
+								}, bao.speed);
+							}
+							break;
+						case 40:
+							if(bao.horizontal == 0) {
+								clearInterval(t);
+								clearInterval(b);
+								clearInterval(l);
+								clearInterval(r);
+								b = setInterval(function() {
+									bao.judgefood();
+									bao.bottom();
+									bao.vertical = 0;
+									bao.horizontal = 1;
+								}, bao.speed);
+							}
+							break;
+						case 37:
+							if(bao.vertical == 0) {
+								clearInterval(t);
+								clearInterval(b);
+								clearInterval(l);
+								clearInterval(r);
+								l = setInterval(function() {
+									bao.judgefood();
+									bao.left();
+									bao.vertical = 1;
+									bao.horizontal = 0;
+								}, bao.speed);
+							}
+							break;
+					}
+				}
+			}
+			var t = t;
+			var r = r;
+			var b = b;
+			var l = l;
+			$(document).ready(function() {
+				
+				$(".snake").append(bao.createbody());
+				$(".easy").click(function(){
+					bao.speed=400;
+					$("table").hide();
+				})
+				$(".normal").click(function(){
+					
+					bao.speed=200;
+					$("table").hide();
+				})
+				$(".hard").click(function(){
+					bao.speed=100;
+					$("table").hide();
+				})
+				$(document).keydown(function(event) {
+					var keyn = event.keyCode;
+					aao.direction(keyn);
+				});
+			});
+		</script>
+
+	</body>
+
+</html>
