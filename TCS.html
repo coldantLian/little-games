@@ -75,6 +75,7 @@
 		<script src="css/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			var bao = {
+				// 参数设置
 				bTop: 240,
 				bLeft: 640,
 				fTop: null,
@@ -87,11 +88,13 @@
 				l: null,
 				vertical: 0,
 				horizontal: 0,
+				// 出现蛇
 				createsnake: function() {
 					var snake = $(".snake");
 					snake.html = "";
 					snake.append(this.createbody());
 				},
+				// 蛇身体块
 				createbody: function() {
 					me = this;
 					body = [
@@ -100,7 +103,7 @@
 					];
 					return body.join("").replace("{@bodyleft}", me.bLeft).replace("{@bodytop}", me.bTop);
 				},
-
+				// 防止食物出现在身上
 				judgenewfood: function() {
 					me = this;
 					$(".snakeBody").each(
@@ -114,6 +117,7 @@
 					)
 					return this.fLeft;
 				},
+				// 出现食物
 				creatfood: function() {
 					me = this;
 					do {
@@ -157,6 +161,8 @@
 						}
 					})
 				},
+				
+				// 上下左右
 				top: function() {
 					me = this;
 					me.bTop -= 40;
@@ -209,6 +215,8 @@
 				}
 
 			}
+			
+			// 事件处理
 			var aao = {
 				direction: function(key) {
 					switch(key) {
